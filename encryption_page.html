@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Encryption Tool</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            text-align: center;
+        }
+
+        label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            width: 300px;
+            margin: 10px 0;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 1.2em;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        #encryptedMessage {
+            font-family: 'Courier New', Courier, monospace;
+            color: #d9534f;
+        }
+
+        .author {
+            font-size: 0.8em;
+            color: rgba(0, 0, 0, 0.5);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .container p {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Message Encryption Tool</h1>
+        <label for="message">Please enter the message to be encrypted:</label>
+        <input type="text" id="message" placeholder="Your message😁">
+        <br><br>
+        <button onclick="encryptMessage()">Encrypt Message</button>
+        <p><strong>Encrypted Result:</strong><span id="encryptedMessage"></span></p>
+        <div class="author">Author: xzhiyouu</div>
+    </div>
+
+    <script>
+        function generateKey(message, seed) {
+            let key = [];
+            let random = new Random(seed);
+            for (let i = 0; i < message.length; i++) {
+                key.push(random.nextInt(0, 255));
+            }
+            return key;
+        }
+
+        function encrypt(message) {
+            const password = "20080602";
+            const seed = password.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const key = generateKey(message, seed);
+
+            let encrypted = [];
+            for (let i = 0; i < message.length; i++) {
+                let charCode = message.charCodeAt(i) ^ key[i];
+                charCode = (charCode + i * 3) % 256;
+                encrypted.push(charCode.toString(16).padStart(2, "0"));
+            }
+
+            return encrypted.join("");
+        }
+
+        function encryptMessage() {
+            const message = document.getElementById("message").value;
+
+            if (message === "") {
+                alert("Please enter a message!");
+                return;
+            }
+
+            const encryptedMessage = encrypt(message);
+            document.getElementById("encryptedMessage").textContent = encryptedMessage;
+        }
+
+        class Random {
+            constructor(seed) {
+                this.seed = seed;
+            }
+            nextInt(min, max) {
+                this.seed = (this.seed * 9301 + 49297) % 233280;
+                const rnd = this.seed / 233280;
+                return Math.floor(min + rnd * (max - min));
+            }
+        }
+    </script>
+</body>
+</html>
